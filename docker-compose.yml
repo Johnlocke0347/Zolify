@@ -1,0 +1,12 @@
+```yaml
+version: '3.8'
+services:
+  base:
+    build: ./docker
+    ports: ["8080:8080"]
+  sentiment:
+    build: ./jobs/imdb-sentiment
+    ports: ["8081:8081"]  
+  healthcheck:
+    build: ./healthcheck
+    depends_on: [base, sentiment]
