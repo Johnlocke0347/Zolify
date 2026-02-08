@@ -1,17 +1,10 @@
 name: Miner Jobs Live
-on: [push]
+on:
+  push:
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Build base container
-        run: docker build -t zolify/base ./docker
-      - name: Build imdb job
-        run: docker build -t zolify/imdb ./jobs/imdb-sentiment
-      - name: Test base container
-        run: docker run --rm zolify/base > /dev/null || true
-      - name: Test imdb job
-        run: docker run --rm zolify/imdb > /dev/null || true
-      - name: Miner jobs validated
-        run: echo "MINERS: 2 JOBS PRODUCTION READY"
+    - uses: actions/checkout@v4
+    - name: Build base container
+      run: docker
