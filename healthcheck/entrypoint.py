@@ -2,6 +2,7 @@ import requests
 import json
 import hashlib
 import time
+import sys
 
 def generate_challenge_salt():
     return f"zolify-subnet1-{int(time.time()//60):06d}-{hashlib.sha256(str(time.time()).encode()).hexdigest()[:8]}"
@@ -32,4 +33,5 @@ def check_services():
     return overall
 
 if __name__ == "__main__":
-    check_services()
+    success = check_services()
+    sys.exit(0 if success else 1)
