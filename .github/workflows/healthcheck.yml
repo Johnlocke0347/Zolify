@@ -1,18 +1,20 @@
-name: Health Check Pipeline
+name: Zolify Health Check
 on: [push]
 jobs:
-  docker-build:
+  test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Build base Docker
+    
+    - name: Build Base Container
       run: docker build -t zolify/base ./docker
-  imdb-train:
-    needs: docker-build
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Build & run sentiment model
+      
+    - name: Build IMDb Job  
+      run: docker build -t zolify/imdb ./jobs/imdb-sentiment
+      
+    - name: Test Base Endpoint
       run: |
-        docker build -t zolify/imdb ./jobs/imdb-sentiment
-        docker run --rm zolify/imdb
+        docker run --rm zolify/base curl localhost:8080/health
+      
+    - name: Test IMDb Job
+      run: docker run --rm zolify/imdb
