@@ -15,11 +15,18 @@ Deploy a production-ready miner in 60 seconds:
 ```bash
 git clone [https://github.com/Johnlocke0347/zolify](https://github.com/Johnlocke0347/zolify)
 cd zolify
-docker compose up --build
+pip install -r requirements.txt
+python train.py
+Live Leaderboard
+Monitor your submissions and global rank in real-time: [https://www.google.com/search?q=https://unsleepy-kyler-vyingly.ngrok-free.dev/leaderboard]
 Architecture
-The repository is structured for high-availability CI/CD:
+The network is built for the Lookup Singularity, replacing heavy mathematical circuits with lightning-fast Jolt VM lookups.
 
-docker/: Base miner environment (Ubuntu 22.04 + Non-root security).
+Jolt VM: Executes PyTorch models and records an execution trace.
+
+Lasso Prover: Uses the Sum-check protocol to prove the trace against a massive lookup table.
+
+Aggregator Hub: A FastAPI + Ngrok bridge that verifies proofs and updates the global state.
 
 jobs/imdb-sentiment/: Jolt-wrapped PyTorch models using distilbert-base-uncased.
 
@@ -40,9 +47,8 @@ Alpha High          52,4280.8      scaling for consistency bonuses.
 Activity Cutoff     5,000          Missing proofs leads to deregistration.
 
 Services & API
-Base Miner (Port 8080)
-Returns real-time status and mock proof for connectivity checks.
-curl localhost:8080/health
+Base Miner (Local)
+Returns real-time status and Lasso proof availability. curl localhost:8000/api/leaderboard
 Sentiment Model (Port 8081)
 Executes Jolt-audited training passes.
 # Returns: {"status": "success", "zk_proof": "0x...", "f1": 0.87}
