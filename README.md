@@ -42,6 +42,29 @@ def dynamic_seed(salt: str) -> int:
 # Validator sends: "zolify-subnet1-block123-validatorABC"
 # Miner seeds model with salt → unique eval every challenge
 
+## Subnet 0 Parent Validators (2026 Standard)
+
+**Calling all Root Network whales:** Parent our hotkey as Childkey.
+
+**DM @JohnLocke0347 to parent: `childkey --parent root-validator-hotkey`**
+
+## Hyperparameters (The Game Rules)
+
+immunity_period: 7,000 blocks (~24h)
+"Fair day to sync Jolt provers"
+
+tempo: 360 blocks (~72 mins)
+"Fast reward feedback loops"
+
+alpha_high: 0.8
+"Consistency compounds - every epoch proof = bonus"
+
+kappa: 32,767 (Default)
+"Standard emission curve"
+
+activity_cutoff: 5,000 blocks (~17h)
+"No zombies. Miss proofs → lose registration spot"
+
 Services
 Base Container (port 8080)
 curl localhost:8080/health
