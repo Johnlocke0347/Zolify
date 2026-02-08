@@ -1,11 +1,15 @@
 {
   "immunity_period": 7000,
-  "tempo": 360, 
-  "alpha_high": 0.8,
+  "tempo": 360,
+  "adjustment_alpha": 65535,
   "kappa": 32767,
+  "rho": 10,
   "activity_cutoff": 5000,
-  "parent_subnet": 0,
-  "childkey_support": true,
-  "proof_format": "jolt",
+  "target_regs_per_interval": 1,
+  "min_burn": 1000000000,
+  "max_burn": 100000000000,
+  "adjustment_interval": 360,
+  "bonds_moving_avg": 900000,
+  "alpha_high": 52428,
   "network": "finney"
 }
