@@ -1,10 +1,12 @@
 FROM ubuntu:22.04
+
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     procps \
     ca-certificates \
+    netcat-openbsd \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && useradd -m -s /bin/bash miner
