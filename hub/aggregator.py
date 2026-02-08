@@ -9,6 +9,10 @@ app = FastAPI(title="Zolify Genesis Aggregator")
 HUB_URL = "https://unsleepy-kyler-vyingly.ngrok-free.dev"
 leaderboard = {}
 
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy", "timestamp": time.time()}
+
 @app.get("/leaderboard", response_class=HTMLResponse)
 async def get_web_leaderboard():
     sorted_scores = sorted(leaderboard.items(), key=lambda x: x[1]['points'], reverse=True)
@@ -55,7 +59,7 @@ async def submit_work(submission: ProofSubmission):
     leaderboard[uid]["submissions"] += 1
     leaderboard[uid]["last_seen"] = time.time()
 
-    print(f" Accepted proof from {uid} | F1: {submission.f1}")
+    print(f"Accepted proof from {uid} | F1: {submission.f1}")
     return {"status": "success", "total_points": leaderboard[uid]["points"]}
 
 @app.get("/api/leaderboard")
