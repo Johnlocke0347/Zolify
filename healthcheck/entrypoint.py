@@ -4,14 +4,12 @@ import hashlib
 import time
 
 def generate_challenge_salt():
-    """Validator sends unique salt per challenge"""
     return f"zolify-subnet1-{int(time.time()//60):06d}-{hashlib.sha256(str(time.time()).encode()).hexdigest()[:8]}"
 
 def check_services():
     base_url = "http://base:8080/health"
     sentiment_url = "http://sentiment:8081/train"
     
-    # Generate challenge
     challenge_salt = generate_challenge_salt()
     
     endpoints = [
