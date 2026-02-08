@@ -1,0 +1,11 @@
+{
+  "immunity_period": 7000,
+  "tempo": 360, 
+  "alpha_high": 0.8,
+  "kappa": 32767,
+  "activity_cutoff": 5000,
+  "parent_subnet": 0,
+  "childkey_support": true,
+  "proof_format": "jolt",
+  "network": "finney"
+}
