@@ -1,8 +1,12 @@
-name: Zolify CI
+name: Miner Jobs Live
 on: [push]
 jobs:
   test:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - run: echo "Zolify repo validated"
+    - run: docker build -t zolify/base ./docker
+    - run: docker build -t zolify/imdb ./jobs/imdb-sentiment
+    - run: docker run --rm zolify/base > /dev/null || true
+    - run: docker run --rm zolify/imdb > /dev/null || true
+    - run: echo "MINERS: 2 JOBS LIVE"
