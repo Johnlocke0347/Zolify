@@ -29,6 +29,19 @@ Tokenomics Ready
 MINERS: docker run → earn ZOL
 VALIDATORS: python score.py → earn ZOL  
 ZK: Verify compute off-chain
+
+## Anti-Cheat: Dynamic Salted Seeds
+
+**Fixed seeds = instant cheating. Dynamic salts = Bittensor-grade fairness.**
+
+```python
+def dynamic_seed(salt: str) -> int:
+    combined = f"{salt}-{block_time}-{nonce}"
+    return int(hashlib.sha256(combined.encode()).hexdigest(), 16) % (2**32)
+
+# Validator sends: "zolify-subnet1-block123-validatorABC"
+# Miner seeds model with salt → unique eval every challenge
+
 Services
 Base Container (port 8080)
 curl localhost:8080/health
