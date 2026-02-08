@@ -1,17 +1,30 @@
 version: '3.8'
+
 services:
-  base:
-    build: ./docker
-    ports: ["8080:8080"]
-    volumes:
-      - ./config:/app/config:ro
-  sentiment:
-    build: ./jobs/imdb-sentiment
-    ports: ["8081:8081"]
-    volumes: 
-      - ./config:/app/config:ro
-  healthcheck:
-    build: ./healthcheck
-    depends_on: [base, sentiment]
-    volumes:
-      - ./config:/app/config:ro
+  zolify-miner:
+    build: .
+    restart: unless-stopped 
+    ports:
+      - "8080:8080"
+    user: miner
+    
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all          
+              capabilities: [gpu]
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
