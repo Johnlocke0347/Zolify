@@ -6,3 +6,4 @@ python3 /app/hub/aggregator.py &
 sleep 5
 
 python3 /app/test_miner.py
+tail -f /dev/null
