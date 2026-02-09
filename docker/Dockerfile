@@ -14,7 +14,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN pip3 install --no-cache-dir -r requirements.txt
+RUN sed -i '/zolify/d' requirements.txt && pip3 install --no-cache-dir -r requirements.txt
 RUN sed -i 's/\r$//' docker/entrypoint.sh && chmod +x docker/entrypoint.sh
 
 HEALTHCHECK --interval=10s --timeout=5s --start-period=15s --retries=3 \
@@ -22,4 +22,4 @@ HEALTHCHECK --interval=10s --timeout=5s --start-period=15s --retries=3 \
 
 EXPOSE 8080
 
-ENTRYPOINT ["/bin/bash", "docker/entrypoint.sh"]
+ENTRYPOINT ["/bin/bash", "/app/docker/entrypoint.sh"]
