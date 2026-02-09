@@ -3,13 +3,13 @@ import torch.nn as nn
 from transformers import AutoModel, AutoTokenizer
 from datasets import load_dataset
 import zolify
-import json
 import hashlib
 import time
 import os
 import requests
 
-HUB_URL = "https://unsleepy-kyler-vyingly.ngrok-free.dev/submit"
+# Use Localhost if running in the same container, otherwise use Env Var
+HUB_URL = os.getenv("HUB_URL", "http://127.0.0.1:8000/submit")
 MINER_UID = os.getenv("MINER_UID", "miner_alpha_01")
 CHALLENGE_SALT = os.getenv("CHALLENGE_SALT", "zolify-default-challenge")
 
@@ -47,20 +47,17 @@ def prepare_data():
     return dataloader
 
 def run_mining_task():
-    print(f"🚀 Miner {MINER_UID} initializing Lasso/Jolt prover...")
+    print(f" Miner {MINER_UID} initializing...")
     
     dataloader = prepare_data()
     model = SentimentModel(CHALLENGE_SALT)
-    
-    print(f"📥 Training on IMDB dataset with salt: {CHALLENGE_SALT}")
     
     with zolify.audit_context() as audit:
         for i, batch in enumerate(dataloader):
             input_ids = batch['input_ids']
             attention_mask = batch['attention_mask']
-            
             prediction = model(input_ids, attention_mask)
-            print(f"Batch {i+1} processed through Jolt VM...")
+            print(f"Batch {i+1} processed...")
             
         proof = audit.generate_proof()
 
@@ -71,20 +68,14 @@ def run_mining_task():
         "seed": dynamic_seed(CHALLENGE_SALT)
     }
 
-    headers = {
-        "ngrok-skip-browser-warning": "69420",
-        "Content-Type": "application/json"
-    }
+    headers = {"Content-Type": "application/json"}
 
     try:
-        print(f"📡 Submitting ZK-Proof to {HUB_URL}...")
-        response = requests.post(HUB_URL, json=result_data, headers=headers)
-        if response.status_code == 200:
-            print(f"Submission Successful: {response.json()}")
-        else:
-            print(f"Submission Failed. Status: {response.status_code}")
+        print(f" Submitting ZK-Proof to {HUB_URL}...")
+        response = requests.post(HUB_URL, json=result_data, headers=headers, timeout=30)
+        print(f"Response: {response.status_code} - {response.text}")
     except Exception as e:
-        print(f"📡 Connection Error: {e}")
+        print(f" Connection Error: {e}")
 
 if __name__ == "__main__":
     run_mining_task()
