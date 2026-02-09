@@ -1,4 +1,6 @@
 import requests
+import json
+import sys
 
 HUB_URL = "https://unsleepy-kyler-vyingly.ngrok-free.dev/submit"
 
@@ -10,11 +12,23 @@ data = {
 }
 
 headers = {
-    "ngrok-skip-browser-warning": "69420"
+    "ngrok-skip-browser-warning": "69420",
+    "Content-Type": "application/json"
 }
 
-try:
-    r = requests.post(HUB_URL, json=data, headers=headers)
-    print(f"Response: {r.json()}")
-except Exception as e:
-    print(f"Connection failed: {e}")
+def run_test():
+    try:
+        r = requests.post(HUB_URL, json=data, headers=headers, timeout=10)
+        r.raise_for_status()
+        
+        response_data = r.json()
+        print(f"Status: SUCCESS | Response: {response_data}")
+        return True
+    except Exception as e:
+        print(f"Status: FAILED | Error: {e}")
+        return False
+
+if __name__ == "__main__":
+    success = run_test()
+    if not success:
+        sys.exit(1)
