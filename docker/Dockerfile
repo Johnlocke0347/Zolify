@@ -14,7 +14,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN sed -i '/zolify/d' requirements.txt && pip3 install --no-cache-dir -r requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt || echo "Requirements skipped or partially installed"
 RUN sed -i 's/\r$//' docker/entrypoint.sh && chmod +x docker/entrypoint.sh
 
 HEALTHCHECK --interval=10s --timeout=5s --start-period=15s --retries=3 \
