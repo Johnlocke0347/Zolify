@@ -7,8 +7,8 @@ import hashlib
 import time
 import os
 import requests
+from sklearn.metrics import f1_score
 
-# Use Localhost if running in the same container, otherwise use Env Var
 HUB_URL = os.getenv("HUB_URL", "http://127.0.0.1:8000/submit")
 MINER_UID = os.getenv("MINER_UID", "miner_alpha_01")
 CHALLENGE_SALT = os.getenv("CHALLENGE_SALT", "zolify-default-challenge")
@@ -41,41 +41,46 @@ def prepare_data():
     tokenized_dataset.set_format("torch")
 
     dataloader = torch.utils.data.DataLoader(
-        tokenized_dataset.shuffle(seed=42).select(range(10)), 
-        batch_size=2
+        tokenized_dataset.shuffle(seed=42).select(range(20)), 
+        batch_size=4
     )
     return dataloader
 
 def run_mining_task():
-    print(f" Miner {MINER_UID} initializing...")
-    
+    print(f" Miner {MINER_UID} starting evaluation...")
     dataloader = prepare_data()
     model = SentimentModel(CHALLENGE_SALT)
+    all_preds = []
+    all_labels = []
     
     with zolify.audit_context() as audit:
         for i, batch in enumerate(dataloader):
             input_ids = batch['input_ids']
             attention_mask = batch['attention_mask']
-            prediction = model(input_ids, attention_mask)
+            labels = batch['labels']
+            with torch.no_grad():
+                prediction = model(input_ids, attention_mask)
+                preds = (prediction > 0.5).float().cpu().numpy()
+            all_preds.extend(preds)
+            all_labels.extend(labels.cpu().numpy())
             print(f"Batch {i+1} processed...")
-            
         proof = audit.generate_proof()
+
+    final_f1 = f1_score(all_labels, all_preds)
+    print(f"Real F1 Score: {final_f1:.4f}")
 
     result_data = {
         "miner_uid": MINER_UID,
-        "f1": 0.87,
+        "f1": float(final_f1),
         "zk_proof": proof.hex(),
         "seed": dynamic_seed(CHALLENGE_SALT)
     }
 
-    headers = {"Content-Type": "application/json"}
-
     try:
-        print(f" Submitting ZK-Proof to {HUB_URL}...")
-        response = requests.post(HUB_URL, json=result_data, headers=headers, timeout=30)
-        print(f"Response: {response.status_code} - {response.text}")
+        response = requests.post(HUB_URL, json=result_data, timeout=30)
+        print(f"Aggregator response: {response.json()}")
     except Exception as e:
-        print(f" Connection Error: {e}")
+        print(f"Submission error: {e}")
 
 if __name__ == "__main__":
     run_mining_task()
