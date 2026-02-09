@@ -2,7 +2,6 @@ torch
 transformers
 datasets
 requests
-zolify
 fastapi
 uvicorn
 pydantic
