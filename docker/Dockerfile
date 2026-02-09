@@ -3,27 +3,20 @@ FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 \
     curl \
-    procps \
     ca-certificates \
-    netcat-openbsd \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && useradd -m -s /bin/bash miner
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-COPY --chown=miner:miner docker/entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
+COPY --chown=root:root docker/entrypoint.sh /app/entrypoint.sh
+RUN sed -i 's/\r$//' /app/entrypoint.sh && chmod +x /app/entrypoint.sh
 
-USER miner
-
-HEALTHCHECK --interval=5s --timeout=3s --start-period=2s --retries=3 \
-  CMD curl -f http://localhost:8080/ || exit 1
-
-LABEL version="1.0"
-LABEL description="Zolify Jolt-Native Prover Environment"
+HEALTHCHECK --interval=5s --timeout=5s --start-period=5s --retries=3 \
+  CMD curl -f http://127.0.0.1:8080/ || exit 1
 
 EXPOSE 8080
 
-ENTRYPOINT ["/app/entrypoint.sh"]
+ENTRYPOINT ["/bin/bash", "/app/entrypoint.sh"]
