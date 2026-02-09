@@ -20,6 +20,9 @@ RUN pip3 install --no-cache-dir transformers datasets
 RUN pip3 install --no-cache-dir fastapi uvicorn pydantic requests
 
 RUN pip3 install --no-cache-dir zolify || echo "Zolify not found, skipping"
+RUN python3 -c "from transformers import AutoModel, AutoTokenizer; \
+    AutoTokenizer.from_pretrained('distilbert-base-uncased'); \
+    AutoModel.from_pretrained('distilbert-base-uncased')"
 
 COPY . .
 
