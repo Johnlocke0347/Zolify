@@ -18,30 +18,17 @@ jobs:
       run: |
         docker run -d --name miner-check zolify-miner
         
-        sleep 10
+        echo "Waiting 15s for miner startup..."
+        sleep 15
         
-        for i in {1..10}; do
-          STATUS=$(docker inspect --format='{{.State.Status}}' miner-check)
-          HEALTH=$(docker inspect --format='{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}' miner-check)
-          
-          echo "Attempt $i: Status=$STATUS, Health=$HEALTH"
-          
-          # If it's running and not crashing, we call it a win
-          if [ "$STATUS" == "running" ]; then
-            echo "Miner is live!"
-            docker stop miner-check
-            exit 0
-          fi
-          
-          if [ "$STATUS" == "exited" ]; then
-            echo "Miner crashed!"
-            docker logs miner-check
-            exit 1
-          fi
-          
-          sleep 5
-        done
-        
-        echo "Health check timed out!"
-        docker logs miner-check
-        exit 1
+        # Check if the process 'python' is running inside the container
+        if docker exec miner-check pgrep -f "python" > /dev/null; then
+          echo "SUCCESS: Miner process is running."
+          docker stop miner-check
+          exit 0
+        else
+          echo "FAILED: Miner process not found!"
+          docker logs miner-check
+          docker inspect miner-check
+          exit 1
+        fi
