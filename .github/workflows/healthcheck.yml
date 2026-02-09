@@ -12,27 +12,21 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Build miner container
-      run: docker build -t zolify-miner .
+      run: |
+        docker build -t zolify-miner -f docker/Dockerfile .
 
     - name: Run health check
       run: |
         docker run -d --name miner-check zolify-miner
-        
-        echo "Waiting for startup..."
+        echo "Waiting 10s..."
         sleep 10
         
-        STATUS=$(docker inspect --format='{{.State.Status}}' miner-check)
-        echo "Container status: $STATUS"
-        
-        if [ "$STATUS" == "running" ]; then
+        if [ "$(docker inspect -f '{{.State.Running}}' miner-check)" == "true" ]; then
           echo "SUCCESS: Miner is live."
           docker stop miner-check
           exit 0
         else
-          echo "CRITICAL: Miner exited or failed to start!"
-          echo "--- DOCKER LOGS ---"
+          echo "FAILED: Miner died instantly."
           docker logs miner-check
-          echo "--- INTERNAL DIRECTORY ---"
-          docker exec miner-check ls -R || echo "Container not reachable for LS"
           exit 1
         fi
