@@ -15,8 +15,7 @@ COPY . .
 
 RUN sed -i 's/\r$//' docker/entrypoint.sh && chmod +x docker/entrypoint.sh
 
-# Increased start-period and timeout to prevent premature 'unhealthy' status
-HEALTHCHECK --interval=10s --timeout=10s --start-period=30s --retries=5 \
+HEALTHCHECK --interval=10s --timeout=10s --start-period=10s --retries=3 \
   CMD curl -f http://127.0.0.1:8080/ || exit 1
 
 EXPOSE 8080
