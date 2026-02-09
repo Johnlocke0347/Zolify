@@ -2,4 +2,7 @@
 python3 -m http.server 8080 --bind 0.0.0.0 &
 
 python3 /app/hub/aggregator.py &
+
+sleep 5
+
 python3 /app/test_miner.py
