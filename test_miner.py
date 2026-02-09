@@ -18,14 +18,13 @@ headers = {
 }
 
 def run_test():
-    if os.getenv("GITHUB_ACTIONS") == "true":
-        return True
-
     try:
         r = requests.post(HUB_URL, json=data, headers=headers, timeout=10)
         r.raise_for_status()
+        print(f"Submission successful: {r.status_code}")
         return True
-    except Exception:
+    except Exception as e:
+        print(f"Submission failed: {e}")
         return False
 
 if __name__ == "__main__":
