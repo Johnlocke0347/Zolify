@@ -1,6 +1,7 @@
 FROM python:3.10-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHONUNBUFFERED=1
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
@@ -12,16 +13,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-RUN pip3 install --no-cache-dir \
-    torch --index-url https://download.pytorch.org/whl/cpu \
-    transformers \
-    datasets \
-    requests \
-    fastapi \
-    uvicorn \
-    pydantic
+RUN pip3 install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
 
-RUN pip3 install zolify || echo "Zolify installation skipped"
+RUN pip3 install --no-cache-dir transformers datasets
+
+RUN pip3 install --no-cache-dir fastapi uvicorn pydantic requests
+
+RUN pip3 install --no-cache-dir zolify || echo "Zolify not found, skipping"
 
 COPY . .
 
@@ -30,7 +28,6 @@ RUN sed -i 's/\r$//' docker/entrypoint.sh && chmod +x docker/entrypoint.sh
 HEALTHCHECK --interval=30s --timeout=20s --start-period=60s --retries=5 \
   CMD curl -f http://127.0.0.1:8080/ || exit 1
 
-EXPOSE 8080
-EXPOSE 8000
+EXPOSE 8080 8000
 
 ENTRYPOINT ["/bin/bash", "/app/docker/entrypoint.sh"]
