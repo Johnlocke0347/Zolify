@@ -18,15 +18,28 @@ jobs:
     - name: Run health check
       run: |
         docker run -d --name miner-check zolify-miner
-        echo "Waiting 10s..."
-        sleep 10
         
-        if [ "$(docker inspect -f '{{.State.Running}}' miner-check)" == "true" ]; then
-          echo "SUCCESS: Miner is live."
-          docker stop miner-check
-          exit 0
-        else
-          echo "FAILED: Miner died instantly."
-          docker logs miner-check
-          exit 1
-        fi
+        echo "Waiting for container to move from 'starting' to 'healthy'..."
+        
+        for i in {1..15}; do
+          STATUS=$(docker inspect --format='{{.State.Health.Status}}' miner-check)
+          echo "Current State: $STATUS"
+          
+          if [ "$STATUS" == "healthy" ]; then
+            echo "SUCCESS: Miner passed internal health checks."
+            docker stop miner-check
+            exit 0
+          fi
+          
+          if [ "$STATUS" == "unhealthy" ]; then
+            echo "FAILURE: Miner reported unhealthy state."
+            docker logs miner-check
+            exit 1
+          fi
+          
+          sleep 5
+        done
+        
+        echo "FAILURE: Healthcheck timed out while in '$STATUS' state."
+        docker logs miner-check
+        exit 1
