@@ -18,8 +18,8 @@ RUN chmod +x /app/entrypoint.sh
 
 USER miner
 
-HEALTHCHECK --interval=10s --timeout=5s --start-period=5s --retries=3 \
-  CMD pgrep -f "python" || exit 1
+HEALTHCHECK --interval=5s --timeout=3s --start-period=2s --retries=3 \
+  CMD curl -f http://localhost:8080/ || exit 1
 
 LABEL version="1.0"
 LABEL description="Zolify Jolt-Native Prover Environment"
