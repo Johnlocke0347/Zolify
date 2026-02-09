@@ -3,8 +3,7 @@ import os
 import requests
 import json
 
-HUB_URL = "https://unsleepy-kyler-vyingly.ngrok-free.dev/submit"
-
+HUB_URL = "http://127.0.0.1:8000/submit"
 data = {
     "miner_uid": "genesis_tester_01",
     "f1": 0.92,
