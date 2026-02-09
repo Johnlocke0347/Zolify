@@ -1,4 +1,15 @@
 #!/bin/bash
-while true; do
-  echo -e "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: 61\r\n\r\n{\"status\":\"active\",\"f1\":0.87,\"proof\":\"0x1a2b3c4d5e6f7890\"}" | nc -l -p 8080 -N
-done
+python3 -c '
+from http.server import BaseHTTPRequestHandler, HTTPServer
+import json
+
+class HealthHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Content-type", "application/json")
+        self.end_headers()
+        response = {"status":"active","f1":0.87,"proof":"0x1a2b3c4d5e6f7890"}
+        self.wfile.write(json.dumps(response).encode())
+
+HTTPServer(("0.0.0.0", 8080), HealthHandler).serve_forever()
+'
